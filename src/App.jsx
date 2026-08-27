@@ -3,7 +3,7 @@ import { Search, MapPin, Ticket, CalendarDays } from "lucide-react";
 import Papa from "papaparse";
 
 
-const SHEET_CSV_URL = "";
+const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSYtRIgfIZgpnTPSHkxTqrvmElRCVSlzjChVBqwqQzdNNmmx2ZZgHZNTjwL_rWhOdLrrmjoCRB5lotd/pub?gid=0&single=true&output=csv";
 
 // Troque pelos nomes de vocês dois (aparecem nas notas):
 const NOME_VOCE = "Suum";

@@ -48,11 +48,11 @@ const bandsOf = (ev) => [ev.headliner, ...supportsOf(ev)].filter(Boolean);
 const isFest = (ev) => !!ev.evento;
 const titleOf = (ev) => ev.evento || ev.headliner;
 const lineupOf = (ev) => (isFest(ev) ? bandsOf(ev) : supportsOf(ev)); // o que mostrar embaixo do título
-const parseNota = (v) => { const n = parseFloat(String(v ?? "").replace(",", ".")); return isFinite(n) ? n : null; };
+const parseNota = (v) => { const n = parseFloat(String(v ?? "").replace(",", ".")); return isFinite(n) ? Math.round(n) : null; };
 const notasDe = (ev) => [ev.notaVoce, ev.notaAmigo].filter((n) => n != null);
 const avgNota = (ev) => { const a = notasDe(ev); return a.length ? a.reduce((x, y) => x + y, 0) / a.length : null; };
 const gapNota = (ev) => (ev.notaVoce != null && ev.notaAmigo != null) ? Math.abs(ev.notaVoce - ev.notaAmigo) : null;
-const fmtNota = (n) => (n == null ? "–" : Number.isInteger(n) ? String(n) : n.toFixed(1));
+const fmtNota = (n) => (n == null ? "–" : String(Math.round(n)));
 
 const normalizeRows = (rows) =>
   rows

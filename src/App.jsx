@@ -155,7 +155,7 @@ export default function App() {
           <span className="reddot" aria-hidden />
           MOBY&nbsp;DICK
         </div>
-        <div className="brandsub">arquivo de shows</div>
+
         {source === "erro" && <div className="srcflag err">planilha não carregou — mostrando exemplo</div>}
         {source === "exemplo" && <div className="srcflag">dados de exemplo</div>}
       </header>

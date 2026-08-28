@@ -353,6 +353,15 @@ export default function App() {
         </p>
       </details>
 
+      <details className="howto">
+        <summary>o que entra (e o que não entra) no arquivo?</summary>
+        <p>
+          Só entram shows que a gente <b>foi de fato</b>. Ficam de fora: shows que a gente
+          comprou ingresso mas não foi, shows de emo revival, e shows cuja compra foi
+          cancelada, aka Bangers Open Air
+        </p>
+      </details>
+
       <footer className="foot">
         <Ticket size={13} /> MOBY DICK — feito pra parar de perguntar “quantas vezes a gente viu essa banda?”
       </footer>

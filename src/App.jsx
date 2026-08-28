@@ -350,17 +350,6 @@ export default function App() {
       </section>
 
       <details className="howto">
-        <summary>como eu adiciono um show novo?</summary>
-        <p>
-          Os shows moram numa Google Sheet que só você edita. Pra registrar um ingresso novo,
-          é só abrir a planilha (dá pra fazer do celular) e adicionar uma linha com data, evento
-          (se for festival), headliner, suporte, local, cidade, preço, setor e as notas de vocês
-          dois. O site lê a planilha publicada e atualiza sozinho — seu amigo só precisa do link,
-          não edita nada. As instruções de conexão estão no topo do código.
-        </p>
-      </details>
-
-      <details className="howto">
         <summary>o que entra (e o que não entra) no arquivo?</summary>
         <p>
           Só entram shows que a gente <b>foi de fato</b>. Ficam de fora: shows que a gente

@@ -74,8 +74,8 @@ const normalizeRows = (rows) =>
     .sort((a, b) => a.dateObj - b.dateObj);
 
 export default function App() {
-  const [rawRows, setRawRows] = useState(SAMPLE_DATA);
-  const [source, setSource] = useState("exemplo"); // exemplo | live | erro
+    const [rawRows, setRawRows] = useState(SHEET_CSV_URL ? null : SAMPLE_DATA);
+  const [source, setSource] = useState(SHEET_CSV_URL ? "carregando" : "exemplo"); // carregando | exemplo | live | erro
   const [query, setQuery] = useState("");
 
   useEffect(() => {
@@ -85,11 +85,11 @@ export default function App() {
       header: true,
       skipEmptyLines: true,
       complete: (res) => { setRawRows(res.data); setSource("live"); },
-      error: () => setSource("erro"),
+      error: () => { setRawRows(SAMPLE_DATA); setSource("erro"); },
     });
   }, []);
 
-  const events = useMemo(() => normalizeRows(rawRows), [rawRows]);
+    const events = useMemo(() => normalizeRows(rawRows || []), [rawRows]);
   const hoje = todayMid();
 
   const past = useMemo(() => events.filter((e) => e.dateObj < hoje), [events]);
@@ -150,6 +150,13 @@ export default function App() {
 
   return (
     <div className="wrap">
+      {source === "carregando" && (
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "60vh", color: "var(--muted)", fontFamily: "'Oswald'", letterSpacing: "2px", textTransform: "uppercase", fontSize: "13px" }}>
+          carregando shows…
+        </div>
+      )}
+      {source !== "carregando" && (<>
+      
       <header className="top">
         <div className="brand">
           <span className="reddot" aria-hidden />
@@ -365,6 +372,7 @@ export default function App() {
       <footer className="foot">
         <Ticket size={13} /> MOBY DICK — feito pra parar de perguntar “quantas vezes a gente viu essa banda?”
       </footer>
+      </>)}
     </div>
   );
 }

@@ -133,6 +133,26 @@ export default function App() {
     return Object.entries(g).sort((a, b) => b[0] - a[0]);
   }, [events]);
 
+  // cada ano é uma "tier": número cronológico + a banda mais vista naquele ano
+  const tierInfo = useMemo(() => {
+    const byYear = {};
+    events.forEach((e) => {
+      const y = e.dateObj.getFullYear();
+      (byYear[y] = byYear[y] || []).push(e);
+    });
+    const info = {};
+    Object.keys(byYear)
+      .map(Number)
+      .sort((a, b) => a - b)
+      .forEach((y, i) => {
+        const count = {};
+        byYear[y].forEach((e) => bandsOf(e).forEach((b) => { count[b] = (count[b] || 0) + 1; }));
+        const top = Object.entries(count).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))[0];
+        info[y] = { n: i + 1, banda: top ? top[0] : "" };
+      });
+    return info;
+  }, [events]);
+
   const topShows = useMemo(
     () =>
       past
@@ -151,20 +171,20 @@ export default function App() {
   return (
     <div className="wrap">
       {source === "carregando" && (
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "60vh", color: "var(--muted)", fontFamily: "'Oswald'", letterSpacing: "2px", textTransform: "uppercase", fontSize: "13px" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "60vh", color: "#7d7a70", fontFamily: "'Architects Daughter', cursive", fontSize: "17px" }}>
           carregando shows…
         </div>
       )}
       {source !== "carregando" && (<>
-      
+
       <header className="top">
         <div className="brand">
-          <span className="reddot" aria-hidden />
-          MOBY&nbsp;DICK
+          <Wobble>MOBY DICK</Wobble>
         </div>
 
         {source === "erro" && <div className="srcflag err">planilha não carregou — mostrando exemplo</div>}
         {source === "exemplo" && <div className="srcflag">dados de exemplo</div>}
+        <span className="serial">arquivo nº {events.length}</span>
       </header>
 
       {/* HERO — próximo show */}
@@ -250,7 +270,7 @@ export default function App() {
           <ol className="ranking">
             {stats.ranking.slice(0, 8).map(([band, n], i) => (
               <li key={band}>
-                <span className="rkpos">{String(i + 1).padStart(2, "0")}</span>
+                <span className="rkpos">{i + 1}</span>
                 <span className="rkname">{band}</span>
                 <span className="rkbar"><span style={{ width: `${(n / stats.ranking[0][1]) * 100}%` }} /></span>
                 <span className="rkn">{n}×</span>
@@ -260,6 +280,7 @@ export default function App() {
         </div>
 
         <div className="card">
+          <Doodle kind="olho" className="dd-olho" />
           <div className="cardhead">shows por ano</div>
           <div className="years">
             {byYearEntries.map(([y, n]) => (
@@ -276,6 +297,7 @@ export default function App() {
       {/* top shows por nota */}
       {topShows.length > 0 && (
         <section className="card topshows">
+          <Doodle kind="raio" className="dd-raio" />
           <div className="cardhead">
             <span>top shows</span>
             <span className="dim">por nota</span>
@@ -283,16 +305,15 @@ export default function App() {
           <ol className="toplist">
             {topShows.map((e, i) => (
               <li key={i}>
-                <span className="tpos">{String(i + 1).padStart(2, "0")}</span>
+                <span className="tpos">{i + 1}.</span>
                 <span className="tmid">
                   <span className="tname">{titleOf(e)}</span>
                   <span className="tmeta">{fmtShort(e.dateObj)} · {e.cidade}</span>
                 </span>
                 <span className="tnotas">
-                  <span className="tn"><i>{fmtNota(e.notaVoce)}</i>{NOME_VOCE}</span>
-                  <span className="tn"><i>{fmtNota(e.notaAmigo)}</i>{NOME_AMIGO}</span>
+                  <span className="tn"><em>{NOME_VOCE[0]}</em><Stars nota={e.notaVoce} /></span>
+                  <span className="tn"><em>{NOME_AMIGO[0]}</em><Stars nota={e.notaAmigo} /></span>
                 </span>
-                <span className="tavg" title="média">{fmtNota(avgNota(e))}</span>
               </li>
             ))}
           </ol>
@@ -308,13 +329,20 @@ export default function App() {
 
       {/* histórico — assinatura estilo pôster de turnê */}
       <section className="card history">
+        <Doodle kind="caveira" className="dd-caveira" />
         <div className="cardhead">
-          <span>histórico</span>
+          <span>setlist</span>
           <span className="dim"><CalendarDays size={13} /> {events.length} registros</span>
         </div>
         {grouped.map(([year, evs]) => (
           <div className="yearblock" key={year}>
-            <div className="yearlabel">{year}</div>
+            <div className="yearlabel">
+              <span className="tiern">{tierInfo[year] ? tierInfo[year].n : "?"}.</span>
+              <span className="tieryear"><Wobble>{String(year)}</Wobble></span>
+              {tierInfo[year] && tierInfo[year].banda && (
+                <span className="tierband">{tierInfo[year].banda}</span>
+              )}
+            </div>
             <ul className="showlist">
               {evs.map((e, i) => {
                 const future = e.dateObj >= hoje;
@@ -334,10 +362,9 @@ export default function App() {
                     <span className="place">
                       <span className="pv">{e.local}</span>
                       <span className="pc">{e.cidade}{e.setor ? ` · ${e.setor}` : ""}</span>
-                      {notasDe(e).length > 0 && (
+                      {avgNota(e) != null && (
                         <span className="rowscores">
-                          <span className="rs"><i>{fmtNota(e.notaVoce)}</i>{NOME_VOCE}</span>
-                          <span className="rs"><i>{fmtNota(e.notaAmigo)}</i>{NOME_AMIGO}</span>
+                          <Stars nota={avgNota(e)} />
                         </span>
                       )}
                     </span>
@@ -359,7 +386,10 @@ export default function App() {
       </details>
 
       <footer className="foot">
-        <Ticket size={13} /> MOBY DICK — feito pra parar de perguntar “quantas vezes a gente viu essa banda?”
+        <span className="frets" aria-hidden />
+        <span className="footxt">
+          <Ticket size={13} /> a setlist de dois. quantas vezes a gente viu cada banda, e quantas faltam.
+        </span>
       </footer>
       </>)}
     </div>
@@ -372,6 +402,62 @@ function Stat({ n, label, small }) {
       <div className={"statn" + (small ? " sm" : "")}>{n}</div>
       <div className="statl">{label}</div>
     </div>
+  );
+}
+
+/* nota 0–10 vira 5 estrelas, com meia estrela: duas camadas sobrepostas,
+   a de cima recortada na fração exata. */
+function Stars({ nota }) {
+  if (nota == null) return <span className="stars none">—</span>;
+  const pct = Math.max(0, Math.min(100, (nota / 10) * 100));
+  return (
+    <span className="stars" role="img" aria-label={`${Math.round(nota * 10) / 10} de 10`}>
+      <span className="stbg" aria-hidden>★★★★★</span>
+      <span className="stfg" aria-hidden style={{ width: `${pct}%` }}>★★★★★</span>
+    </span>
+  );
+}
+
+/* letras tortas — inclinação determinística (mesma string, mesma inclinação sempre) */
+function Wobble({ children }) {
+  const t = String(children ?? "");
+  return (
+    <span className="wob">
+      {t.split("").map((c, i) =>
+        c === " " ? (
+          <span key={i} className="wsp">{" "}</span>
+        ) : (
+          <span
+            key={i}
+            style={{
+              "--r": `${((i * 37 + c.charCodeAt(0) * 13) % 9) - 4}deg`,
+              "--y": `${((i * 23 + c.charCodeAt(0) * 7) % 5) - 2}px`,
+            }}
+          >
+            {c}
+          </span>
+        )
+      )}
+    </span>
+  );
+}
+
+/* rabiscos de caneta na margem da folha */
+const DOODLES = {
+  olho: { vb: "0 0 100 62", d: "M6 31c14-18 30-26 44-26s30 8 44 26c-14 18-30 26-44 26S20 49 6 31zM50 18a13 13 0 100 26 13 13 0 100-26zM50 26a5 5 0 100 10 5 5 0 100-10M50 5V0M79 12l4-6M21 12l-4-6M94 31h6M0 31h6" },
+  caveira: { vb: "0 0 72 88", d: "M36 4C19 4 8 16 8 32c0 10 4 16 8 20v10h40V52c4-4 8-10 8-20 0-16-11-28-28-28zM24 26a7 7 0 100 14 7 7 0 100-14M48 26a7 7 0 100 14 7 7 0 100-14M36 44v7M31 55h10M27 62v12M36 62v14M45 62v12" },
+  palheta: { vb: "0 0 56 66", d: "M28 4C13 4 4 13 4 24c0 14 14 29 24 38 10-9 24-24 24-38C52 13 43 4 28 4zM18 20c4-4 12-6 18-4" },
+  raio: { vb: "0 0 46 74", d: "M27 3 7 40h13l-4 31 22-42H24z" },
+  nota: { vb: "0 0 58 66", d: "M22 50V9l28-6v41M22 50a10 8 0 10-20 0 10 8 0 1020 0M50 44a10 8 0 10-20 0 10 8 0 1020 0M22 19l28-6" },
+};
+
+function Doodle({ kind, className = "" }) {
+  const d = DOODLES[kind];
+  if (!d) return null;
+  return (
+    <svg className={`doodle ${className}`} viewBox={d.vb} aria-hidden="true" focusable="false">
+      <path d={d.d} fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
   );
 }
 

@@ -170,6 +170,7 @@ export default function App() {
 
   return (
     <div className="wrap">
+      <PencilDefs />
       {source === "carregando" && (
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "60vh", color: "#7d7a70", fontFamily: "'Architects Daughter', cursive", fontSize: "17px" }}>
           carregando shows…
@@ -298,6 +299,8 @@ export default function App() {
       {topShows.length > 0 && (
         <section className="card topshows">
           <Doodle kind="raio" className="dd-raio" />
+          <Doodle kind="palheta" className="dd-palheta" />
+          <Doodle kind="estrela" className="dd-estrela" />
           <div className="cardhead">
             <span>top shows</span>
             <span className="dim">por nota</span>
@@ -330,6 +333,10 @@ export default function App() {
       {/* histórico — assinatura estilo pôster de turnê */}
       <section className="card history">
         <Doodle kind="caveira" className="dd-caveira" />
+        <Doodle kind="nota" className="dd-nota" />
+        <Doodle kind="amp" className="dd-amp" />
+        <Doodle kind="chifre" className="dd-chifre" />
+        <Doodle kind="estrela" className="dd-estrela2" />
         <div className="cardhead">
           <span>setlist</span>
           <span className="dim"><CalendarDays size={13} /> {events.length} registros</span>
@@ -388,7 +395,7 @@ export default function App() {
       <footer className="foot">
         <span className="frets" aria-hidden />
         <span className="footxt">
-          <Ticket size={13} /> a setlist de dois. quantas vezes a gente viu cada banda, e quantas faltam.
+          <Ticket size={13} /> MOBY DICK — feito pra parar de perguntar “quantas vezes a gente viu essa banda?”
         </span>
       </footer>
       </>)}
@@ -442,13 +449,42 @@ function Wobble({ children }) {
   );
 }
 
-/* rabiscos de caneta na margem da folha */
+/* o filtro que dá aos rabiscos o aspecto de grafite: traço trêmulo (displacement)
+   e falhado (o ruído vira máscara alpha, abrindo buracos no traço). */
+function PencilDefs() {
+  return (
+    <svg className="pencildefs" width="0" height="0" aria-hidden="true" focusable="false">
+      <defs>
+        <filter id="grafite" x="-35%" y="-35%" width="170%" height="170%" colorInterpolationFilters="sRGB">
+          <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" seed="11" result="warpNoise" />
+          <feDisplacementMap in="SourceGraphic" in2="warpNoise" scale="3.4" xChannelSelector="R" yChannelSelector="G" result="warped" />
+          <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="4" seed="5" result="grain" />
+          <feColorMatrix
+            in="grain"
+            type="matrix"
+            values="0 0 0 0 0
+                    0 0 0 0 0
+                    0 0 0 0 0
+                    1.5 0 0 0 -0.12"
+            result="grainMask"
+          />
+          <feComposite in="warped" in2="grainMask" operator="in" />
+        </filter>
+      </defs>
+    </svg>
+  );
+}
+
+/* rabiscos a lápis espalhados pela folha */
 const DOODLES = {
   olho: { vb: "0 0 100 62", d: "M6 31c14-18 30-26 44-26s30 8 44 26c-14 18-30 26-44 26S20 49 6 31zM50 18a13 13 0 100 26 13 13 0 100-26zM50 26a5 5 0 100 10 5 5 0 100-10M50 5V0M79 12l4-6M21 12l-4-6M94 31h6M0 31h6" },
   caveira: { vb: "0 0 72 88", d: "M36 4C19 4 8 16 8 32c0 10 4 16 8 20v10h40V52c4-4 8-10 8-20 0-16-11-28-28-28zM24 26a7 7 0 100 14 7 7 0 100-14M48 26a7 7 0 100 14 7 7 0 100-14M36 44v7M31 55h10M27 62v12M36 62v14M45 62v12" },
   palheta: { vb: "0 0 56 66", d: "M28 4C13 4 4 13 4 24c0 14 14 29 24 38 10-9 24-24 24-38C52 13 43 4 28 4zM18 20c4-4 12-6 18-4" },
   raio: { vb: "0 0 46 74", d: "M27 3 7 40h13l-4 31 22-42H24z" },
   nota: { vb: "0 0 58 66", d: "M22 50V9l28-6v41M22 50a10 8 0 10-20 0 10 8 0 1020 0M50 44a10 8 0 10-20 0 10 8 0 1020 0M22 19l28-6" },
+  amp: { vb: "0 0 76 86", d: "M8 14h60v66H8zM38 32a16 16 0 100 32 16 16 0 100-32M38 42a6 6 0 100 12 6 6 0 100-12M24 6h28M16 22h10M52 22h10" },
+  estrela: { vb: "0 0 54 52", d: "M27 3 34 19l17 1.5-13 11.5 4 17-15-9.5-15 9.5 4-17L3 20.5 20 19z" },
+  chifre: { vb: "0 0 62 76", d: "M12 72V44a6 6 0 0112 0v-8M24 36V8a6 6 0 0112 0v30M36 38V26a6 6 0 0112 0v14M48 44v-6M12 60c0 10 8 14 18 14s20-6 20-18V38" },
 };
 
 function Doodle({ kind, className = "" }) {
@@ -456,7 +492,15 @@ function Doodle({ kind, className = "" }) {
   if (!d) return null;
   return (
     <svg className={`doodle ${className}`} viewBox={d.vb} aria-hidden="true" focusable="false">
-      <path d={d.d} fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+      <path
+        d={d.d}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        filter="url(#grafite)"
+      />
     </svg>
   );
 }

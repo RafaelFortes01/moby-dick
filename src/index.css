@@ -3,20 +3,35 @@
    tier em vermelho, o que já rolou leva ✓, o que falta fica em azul de caneta. */
 
 html,body{
-  background-color:#2a1d14;
+  background-color:#3a2818;
   background-image:
+    /* sujeira acumulada no chão */
+    radial-gradient(ellipse 24% 10% at 16% 24%,rgba(0,0,0,.42),transparent 70%),
+    radial-gradient(ellipse 17% 8% at 84% 46%,rgba(0,0,0,.36),transparent 70%),
+    radial-gradient(ellipse 28% 7% at 60% 80%,rgba(0,0,0,.32),transparent 72%),
+    radial-gradient(ellipse 15% 11% at 7% 68%,rgba(0,0,0,.3),transparent 72%),
+    radial-gradient(ellipse 19% 6% at 93% 11%,rgba(0,0,0,.32),transparent 72%),
+    radial-gradient(ellipse 12% 5% at 34% 6%,rgba(0,0,0,.26),transparent 74%),
+    /* juntas entre tábuas + veio */
     repeating-linear-gradient(90deg,rgba(0,0,0,.5) 0 3px,rgba(0,0,0,0) 3px 148px),
     repeating-linear-gradient(90deg,rgba(255,255,255,.028) 0 74px,rgba(0,0,0,.05) 74px 148px),
     repeating-linear-gradient(0deg,rgba(255,255,255,.016) 0 2px,rgba(0,0,0,.022) 2px 7px);
+  background-attachment:fixed;
   color:#33322e;
   overflow-x:hidden;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 
-/* profundidade de palco */
+/* pisadas na madeira + profundidade de palco */
 body::before{
   content:"";position:fixed;inset:0;pointer-events:none;z-index:1;
-  background:radial-gradient(ellipse at 50% 28%,transparent 26%,rgba(0,0,0,.6) 100%);
+  background-image:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 220 340'><g fill='%23000' fill-opacity='.5' transform='rotate(-17 110 170) translate(50 25)'><path d='M60 6c27 0 45 21 45 48 0 13-3 23-6 32H21c-3-9-6-19-6-32C15 27 33 6 60 6z'/><rect x='24' y='94' width='72' height='15' rx='7'/><rect x='27' y='117' width='66' height='14' rx='7'/><rect x='31' y='139' width='58' height='13' rx='6'/><ellipse cx='60' cy='216' rx='36' ry='45'/><rect x='31' y='266' width='58' height='11' rx='5'/></g></svg>"),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 220 340'><g fill='%23000' fill-opacity='.36' transform='rotate(26 110 170) translate(50 25) scale(-1 1) translate(-120 0)'><path d='M60 6c27 0 45 21 45 48 0 13-3 23-6 32H21c-3-9-6-19-6-32C15 27 33 6 60 6z'/><rect x='24' y='94' width='72' height='15' rx='7'/><rect x='27' y='117' width='66' height='14' rx='7'/><rect x='31' y='139' width='58' height='13' rx='6'/><ellipse cx='60' cy='216' rx='36' ry='45'/><rect x='31' y='266' width='58' height='11' rx='5'/></g></svg>"),
+    radial-gradient(ellipse at 50% 30%,transparent 34%,rgba(0,0,0,.44) 100%);
+  background-repeat:no-repeat,no-repeat,no-repeat;
+  background-position:2% 64%,95% 14%,center;
+  background-size:130px auto,106px auto,cover;
 }
 /* grão */
 body::after{
@@ -69,10 +84,19 @@ body::after{
 .wob .wsp{width:.3em}
 
 /* rabiscos */
-.doodle{position:absolute;color:var(--pencil);opacity:.24;pointer-events:none;z-index:0;height:auto}
-.dd-olho{width:82px;right:6px;bottom:-16px;transform:rotate(-6deg)}
-.dd-raio{width:30px;right:4px;top:-36px;transform:rotate(13deg)}
-.dd-caveira{width:50px;right:0;top:-46px;transform:rotate(8deg)}
+.pencildefs{position:absolute;width:0;height:0;overflow:hidden}
+.doodle{position:absolute;color:var(--pencil);opacity:.5;pointer-events:none;z-index:0;height:auto;overflow:visible}
+/* margens */
+.dd-olho{width:86px;right:6px;bottom:-18px;transform:rotate(-6deg)}
+.dd-raio{width:32px;right:6px;top:-38px;transform:rotate(13deg)}
+.dd-caveira{width:52px;right:0;top:-48px;transform:rotate(8deg)}
+/* meio da folha */
+.dd-palheta{width:38px;left:41%;top:34%;transform:rotate(-19deg);opacity:.42}
+.dd-estrela{width:32px;left:58%;top:7%;transform:rotate(12deg);opacity:.4}
+.dd-nota{width:46px;left:45%;top:9%;transform:rotate(9deg);opacity:.4}
+.dd-amp{width:54px;left:5%;top:41%;transform:rotate(-7deg);opacity:.38}
+.dd-chifre{width:42px;left:52%;top:69%;transform:rotate(14deg);opacity:.4}
+.dd-estrela2{width:28px;left:34%;top:88%;transform:rotate(-16deg);opacity:.38}
 
 /* ---------- topo da folha ---------- */
 .top{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-bottom:20px}

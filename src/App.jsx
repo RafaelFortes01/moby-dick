@@ -300,20 +300,25 @@ export default function App() {
 
           <div className="search">
             <div className="search-label">QUANTAS VEZES A GENTE VIU…</div>
-            <label className={"search-field" + (query ? "" : " search-field--vazio")}>
+            <label className="search-field">
               <span className="search-icon" aria-hidden>⌕</span>
-              {/* Com o campo vazio o cursor nativo fica no começo da linha, fininho
-                  e escondido atrás do placeholder. Então enquanto não há texto a
-                  barrinha abaixo faz o papel dele — piscando com ou sem foco, no
-                  mesmo lugar. Assim que se digita algo ela sai e o cursor nativo
-                  (vermelho) assume, já posicionado depois do texto. */}
-              {!query && <span className="search-caret" aria-hidden />}
-              <input
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="digita a banda aqui"
-                spellCheck={false}
-              />
+              <span className="search-box">
+                <input
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="digita a banda aqui"
+                  spellCheck={false}
+                />
+                {/* O cursor nativo não renderiza com o campo vazio aqui dentro (o papel
+                    tem transform no ancestral), e quando aparecia era mais fino que a
+                    barrinha — mudava de grossura ao digitar a 1ª letra. Então ele fica
+                    escondido e quem desenha o cursor é sempre esta barrinha: o texto
+                    espelhado (invisível) empurra ela pra posição certa. */}
+                <span className="search-cursor" aria-hidden>
+                  <span className="search-cursor-txt">{query}</span>
+                  <span className="search-caret" />
+                </span>
+              </span>
             </label>
             {search && (
               <div className="search-result">

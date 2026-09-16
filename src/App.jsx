@@ -300,10 +300,13 @@ export default function App() {
 
           <div className="search">
             <div className="search-label">QUANTAS VEZES A GENTE VIU…</div>
-            <label className="search-field">
+            <label className={"search-field" + (query ? "" : " search-field--vazio")}>
               <span className="search-icon" aria-hidden>⌕</span>
-              {/* barrinha piscando enquanto o campo está vazio e sem foco, pra
-                  deixar claro que dá pra digitar ali */}
+              {/* Com o campo vazio o cursor nativo fica no começo da linha, fininho
+                  e escondido atrás do placeholder. Então enquanto não há texto a
+                  barrinha abaixo faz o papel dele — piscando com ou sem foco, no
+                  mesmo lugar. Assim que se digita algo ela sai e o cursor nativo
+                  (vermelho) assume, já posicionado depois do texto. */}
               {!query && <span className="search-caret" aria-hidden />}
               <input
                 value={query}

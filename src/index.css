@@ -256,12 +256,13 @@ html,body{overflow-x:hidden}
 .search-field input{flex:1;min-width:0;background:none;border:none;outline:none;font-family:var(--hand);font-size:30px;color:var(--ink);padding:2px 0;cursor:text;
   caret-color:var(--vermelho)}
 .search-field input::placeholder{color:rgba(60,40,20,.42)}
-/* barrinha de "pode digitar aqui": some assim que o campo ganha foco,
-   quando o cursor de verdade assume */
+/* barrinha que faz o papel do cursor enquanto o campo está vazio — some
+   sozinha quando se digita, porque aí o cursor nativo aparece depois do texto */
 .search-caret{flex:none;width:3px;height:30px;margin-right:-6px;background:var(--vermelho);border-radius:1px;
   animation:caret-blink 1.1s step-end infinite}
-.search-field:focus-within .search-caret{display:none}
 @keyframes caret-blink{0%,100%{opacity:1}50%{opacity:0}}
+/* campo vazio: só a barrinha pisca, pra não ficarem dois cursores no mesmo ponto */
+.search-field--vazio input{caret-color:transparent}
 .search-outras{margin-top:6px;font-size:21px;color:var(--ink-faint)}
 .search-outra{font-family:var(--hand);font-size:21px;color:var(--azul);background:none;border:none;padding:0;cursor:pointer;
   border-bottom:1px dotted rgba(36,86,168,.5)}

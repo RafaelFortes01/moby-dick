@@ -132,19 +132,46 @@ export default function App() {
     return { gasto, ranking, byYear, venues };
   }, [past]);
 
+  // A pergunta é "quantas vezes vimos ESTA banda", então a busca escolhe UMA banda
+  // e conta os shows dela — nunca a soma de todas as bandas que casam com o texto.
   const search = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return null;
-    const hits = past.filter((e) => bandsOf(e).some((b) => b.toLowerCase().includes(q)));
-    const label = past.flatMap((e) => bandsOf(e)).find((b) => b.toLowerCase().includes(q)) || query.trim();
+
+    const candidatas = new Set();
+    past.forEach((e) => bandsOf(e).forEach((b) => {
+      if (b.toLowerCase().includes(q)) candidatas.add(b);
+    }));
+    if (!candidatas.size) return { termo: query.trim(), banda: null, outras: [], count: "0×", hits: [] };
+
+    const showsDe = (banda) => {
+      const alvo = banda.toLowerCase();
+      return past.filter((e) => bandsOf(e).some((b) => b.toLowerCase() === alvo));
+    };
+    // nome exato vence quem começa com o texto, que vence quem só o contém;
+    // empate vai pra banda mais vista.
+    const precisao = (b) => {
+      const n = b.toLowerCase();
+      return n === q ? 0 : n.startsWith(q) ? 1 : 2;
+    };
+    const ordenadas = [...candidatas].sort((a, b) =>
+      precisao(a) - precisao(b) || showsDe(b).length - showsDe(a).length || a.localeCompare(b)
+    );
+
+    const banda = ordenadas[0];
+    const alvo = banda.toLowerCase();
+    const shows = showsDe(banda);
+
     return {
-      label,
-      count: `${hits.length}×`,
-      hits: [...hits].reverse().map((e) => ({
+      termo: query.trim(),
+      banda,
+      outras: ordenadas.slice(1, 6),
+      count: `${shows.length}×`,
+      hits: [...shows].reverse().map((e) => ({
         key: e.data + e.local,
         date: fmtShort(e.dateObj),
         place: `${e.local} · ${e.cidade}`,
-        roleUp: e.evento ? "FESTIVAL" : (e.headliner && e.headliner.toLowerCase().includes(q) ? "HEADLINER" : "SUPORTE"),
+        roleUp: e.evento ? "FESTIVAL" : (e.headliner && e.headliner.toLowerCase() === alvo ? "HEADLINER" : "SUPORTE"),
       })),
     };
   }, [query, past]);
@@ -275,6 +302,9 @@ export default function App() {
             <div className="search-label">QUANTAS VEZES A GENTE VIU…</div>
             <label className="search-field">
               <span className="search-icon" aria-hidden>⌕</span>
+              {/* barrinha piscando enquanto o campo está vazio e sem foco, pra
+                  deixar claro que dá pra digitar ali */}
+              {!query && <span className="search-caret" aria-hidden />}
               <input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
@@ -284,20 +314,41 @@ export default function App() {
             </label>
             {search && (
               <div className="search-result">
-                <div className="search-line">
-                  a gente viu <span className="search-band">{search.label}</span>{" "}
-                  <span className="search-count">{search.count}</span>
-                </div>
-                <div className="search-hits">
-                  {search.hits.map((h) => (
-                    <div className="hit" key={h.key}>
-                      <span className="hit-date">{h.date}</span>
-                      <span className="hit-place">{h.place}</span>
-                      <span className="dotline" />
-                      <span className="hit-role">{h.roleUp}</span>
+                {search.banda ? (
+                  <>
+                    <div className="search-line">
+                      a gente viu <span className="search-band">{search.banda}</span>{" "}
+                      <span className="search-count">{search.count}</span>
                     </div>
-                  ))}
-                </div>
+                    {search.outras.length > 0 && (
+                      <div className="search-outras">
+                        ou:{" "}
+                        {search.outras.map((b, i) => (
+                          <React.Fragment key={b}>
+                            {i > 0 && " · "}
+                            <button type="button" className="search-outra" onClick={() => setQuery(b)}>
+                              {b}
+                            </button>
+                          </React.Fragment>
+                        ))}
+                      </div>
+                    )}
+                    <div className="search-hits">
+                      {search.hits.map((h) => (
+                        <div className="hit" key={h.key}>
+                          <span className="hit-date">{h.date}</span>
+                          <span className="hit-place">{h.place}</span>
+                          <span className="dotline" />
+                          <span className="hit-role">{h.roleUp}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                  <div className="search-line search-vazio">
+                    ainda não — “{search.termo}” não tá no caderno.
+                  </div>
+                )}
               </div>
             )}
           </div>

@@ -249,10 +249,24 @@ html,body{overflow-x:hidden}
 /* ---------- busca ---------- */
 .search{margin-top:38px}
 .search-label{font-family:var(--comic);font-size:22px;letter-spacing:1.4px;color:var(--vermelho)}
-.search-field{display:flex;align-items:center;gap:10px;border-bottom:3px solid rgba(203,72,72,.5);max-width:520px;padding:4px 2px 2px}
+.search-field{display:flex;align-items:center;gap:10px;border-bottom:3px solid rgba(203,72,72,.5);max-width:520px;padding:4px 2px 2px;cursor:text;transition:border-color .15s}
+.search-field:hover{border-bottom-color:rgba(203,72,72,.75)}
+.search-field:focus-within{border-bottom-color:var(--vermelho)}
 .search-icon{font-size:26px;color:rgba(70,48,22,.5)}
-.search-field input{flex:1;min-width:0;background:none;border:none;outline:none;font-family:var(--hand);font-size:30px;color:var(--ink);padding:2px 0}
+.search-field input{flex:1;min-width:0;background:none;border:none;outline:none;font-family:var(--hand);font-size:30px;color:var(--ink);padding:2px 0;cursor:text;
+  caret-color:var(--vermelho)}
 .search-field input::placeholder{color:rgba(60,40,20,.42)}
+/* barrinha de "pode digitar aqui": some assim que o campo ganha foco,
+   quando o cursor de verdade assume */
+.search-caret{flex:none;width:3px;height:30px;margin-right:-6px;background:var(--vermelho);border-radius:1px;
+  animation:caret-blink 1.1s step-end infinite}
+.search-field:focus-within .search-caret{display:none}
+@keyframes caret-blink{0%,100%{opacity:1}50%{opacity:0}}
+.search-outras{margin-top:6px;font-size:21px;color:var(--ink-faint)}
+.search-outra{font-family:var(--hand);font-size:21px;color:var(--azul);background:none;border:none;padding:0;cursor:pointer;
+  border-bottom:1px dotted rgba(36,86,168,.5)}
+.search-outra:hover{color:var(--vermelho);border-bottom-color:rgba(192,66,31,.6)}
+.search-vazio{color:var(--ink-faint)}
 .search-result{margin-top:16px}
 .search-line{font-size:28px;color:var(--ink)}
 .search-band{color:var(--azul)}

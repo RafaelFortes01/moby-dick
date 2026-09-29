@@ -611,28 +611,14 @@ function ImageSlot({ slot, size }) {
   );
 }
 
-/* ---------- filtros que dão textura ao papel e à madeira ---------- */
+/* Só sobraram os filtros que precisam deformar o elemento de verdade (a borda
+   rasgada do papel). As texturas — amassado, fibra, veio da madeira, encardido —
+   saíram daqui: como filtro elas rodavam sobre a área inteira de cada folha, e a
+   da setlist passa de 6000px de altura no celular. Viraram textura repetida no
+   CSS, que o navegador desenha uma vez só. Ver index.css. */
 function PaperDefs() {
   return (
     <svg className="defs" width="0" height="0" aria-hidden="true" focusable="false">
-      <filter id="mdCrumple">
-        <feTurbulence type="fractalNoise" baseFrequency="0.0055 0.009" numOctaves="5" seed="7" result="n" />
-        <feDiffuseLighting in="n" lightingColor="#fff0d2" surfaceScale="4.2" result="l">
-          <feDistantLight azimuth="238" elevation="32" />
-        </feDiffuseLighting>
-      </filter>
-      <filter id="mdFiber">
-        <feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="3" seed="3" />
-        <feColorMatrix type="saturate" values="0" />
-      </filter>
-      <filter id="mdWood">
-        <feTurbulence type="fractalNoise" baseFrequency="0.0012 0.07" numOctaves="5" seed="12" />
-        <feColorMatrix type="saturate" values="0" />
-      </filter>
-      <filter id="mdGrime">
-        <feTurbulence type="fractalNoise" baseFrequency="0.006" numOctaves="4" seed="23" />
-        <feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  1.7 0 0 0 -0.62" />
-      </filter>
       <filter id="mdTorn">
         <feTurbulence type="fractalNoise" baseFrequency="0.016 0.05" numOctaves="3" seed="5" result="t" />
         <feDisplacementMap in="SourceGraphic" in2="t" scale="11" xChannelSelector="R" yChannelSelector="G" />

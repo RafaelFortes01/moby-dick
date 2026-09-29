@@ -33,13 +33,18 @@ html,body{overflow-x:hidden}
     repeating-linear-gradient(91deg,#5c3418 0 108px,#331a0b 108px 115px,#4d2b13 115px 244px,#2b1407 244px 251px,#65391a 251px 376px,#391d0d 376px 383px),
     linear-gradient(180deg,#5d3518 0%,#4b2913 58%,#361b0c 100%);
 }
-.stage-grain{filter:url(#mdWood);opacity:.38;mix-blend-mode:multiply}
+/* veio da madeira: era um filtro sobre a tela inteira, virou textura repetida */
+.stage-grain{opacity:.32;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='220'%3E%3Cfilter id='w'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.006 0.21' numOctaves='4' seed='12'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='220' filter='url(%23w)'/%3E%3C/svg%3E");
+  background-size:300px 220px}
 .stage-light{
   background:
     radial-gradient(120% 70% at 50% -6%,rgba(255,214,150,.2),transparent 62%),
     radial-gradient(96% 76% at 50% 40%,transparent 48%,rgba(0,0,0,.22) 100%);
 }
-.stage-grime{filter:url(#mdGrime);mix-blend-mode:multiply;opacity:.42}
+.stage-grime{mix-blend-mode:multiply;opacity:.4;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='520' height='520'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.008' numOctaves='4' seed='23'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1.7 0 0 0 -0.62'/%3E%3C/filter%3E%3Crect width='520' height='520' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size:520px 520px}
 .stage-dirt{
   mix-blend-mode:multiply;opacity:.66;
   background:
@@ -98,8 +103,23 @@ html,body{overflow-x:hidden}
 .paper{position:relative;margin-bottom:54px}
 .paper-torn{position:absolute;inset:0;filter:url(#mdTorn)}
 .paper-sheet{position:absolute;inset:0}
-.paper-crumple{position:absolute;inset:-10%;filter:url(#mdCrumple);mix-blend-mode:multiply}
-.paper-fiber{position:absolute;inset:0;filter:url(#mdFiber);mix-blend-mode:multiply;opacity:.1}
+/* Amassado. Era feDiffuseLighting sobre feTurbulence de 5 octaves, aplicado à
+   folha inteira — sozinho respondia pela maior parte dos 18s de render no
+   celular. Agora são vincos e áreas amassadas em gradiente, que custam ~nada.
+   A opacidade continua vindo de PAPEL_AMASSADO, no App.jsx. */
+.paper-crumple{position:absolute;inset:0;mix-blend-mode:overlay;
+  background-image:
+    linear-gradient(101deg,transparent calc(27% - 6px),rgba(0,0,0,.34) calc(27% - 1px),rgba(255,255,255,.8) calc(27% + 2px),transparent calc(27% + 6px)),
+    linear-gradient(-84deg,transparent calc(62% - 6px),rgba(0,0,0,.3) calc(62% - 1px),rgba(255,255,255,.72) calc(62% + 2px),transparent calc(62% + 6px)),
+    linear-gradient(94deg,transparent calc(83% - 5px),rgba(0,0,0,.26) calc(83% - 1px),rgba(255,255,255,.62) calc(83% + 1px),transparent calc(83% + 5px)),
+    linear-gradient(180deg,transparent calc(46% - 7px),rgba(0,0,0,.3) calc(46% - 1px),rgba(255,255,255,.75) calc(46% + 2px),transparent calc(46% + 8px)),
+    radial-gradient(ellipse 58% 20% at 24% 14%,rgba(0,0,0,.2),transparent 74%),
+    radial-gradient(ellipse 48% 17% at 78% 54%,rgba(0,0,0,.17),transparent 74%),
+    radial-gradient(ellipse 54% 18% at 44% 85%,rgba(255,255,255,.26),transparent 74%)}
+/* fibra do papel: turbulência simples, repetida em vez de aplicada à folha toda */
+.paper-fiber{position:absolute;inset:0;mix-blend-mode:multiply;opacity:.1;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' seed='3'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23f)'/%3E%3C/svg%3E");
+  background-size:160px 160px}
 .paper-folds{position:absolute;inset:0}
 .paper-body{position:relative}
 
@@ -178,7 +198,6 @@ html,body{overflow-x:hidden}
     linear-gradient(180deg,var(--paper-d),var(--paper-d2));
   box-shadow:0 26px 44px rgba(0,0,0,.6),inset 0 0 70px rgba(116,84,40,.3);
 }
-.paper--archive .paper-crumple{inset:-6%}
 .paper--archive .paper-folds{
   background:
     linear-gradient(90deg,transparent 44.8%,rgba(88,58,28,.15) 47.3%,rgba(255,255,255,.28) 48.3%,transparent 50.6%),
@@ -194,7 +213,6 @@ html,body{overflow-x:hidden}
   background:linear-gradient(180deg,var(--paper-e),var(--paper-e2));
   box-shadow:0 16px 28px rgba(0,0,0,.5),inset 0 0 50px rgba(116,84,40,.28);
 }
-.paper--rule .paper-crumple{inset:-14%}
 .paper--rule .paper-fiber{opacity:.12}
 .paper--rule .paper-body{padding:26px 30px 28px}
 
@@ -210,7 +228,7 @@ html,body{overflow-x:hidden}
 /* ---------- capa ---------- */
 .hero-head{display:flex;align-items:flex-start;gap:26px;flex-wrap:wrap}
 .hero-titles{flex:1 1 380px;min-width:0}
-.brand{margin:0;font-family:var(--gotica);font-size:clamp(58px,8.4vw,104px);line-height:.92;color:var(--ink-2);letter-spacing:1px;
+.brand{margin:0;font-family:var(--gotica);font-size:clamp(38px,9.5vw,104px);line-height:.92;color:var(--ink-2);letter-spacing:1px;
   text-shadow:2px 2px 0 rgba(255,255,255,.55),6px 7px 0 rgba(64,42,20,.25),11px 13px 15px rgba(0,0,0,.2)}
 .brand-sub{font-size:24px;color:var(--ink-faint);margin-top:6px;transform:rotate(-.6deg)}
 .srcflag{margin-top:8px;font-family:var(--comic);font-size:15px;letter-spacing:1.2px;color:var(--vermelho)}
@@ -226,7 +244,7 @@ html,body{overflow-x:hidden}
 /* ---------- próximo show ---------- */
 .next{margin-top:14px;display:flex;align-items:flex-end;gap:30px;flex-wrap:wrap}
 .next-main{flex:1 1 320px;min-width:0}
-.next-title{font-size:clamp(38px,5vw,58px);line-height:1.02;color:var(--azul);text-shadow:1px 1px 0 rgba(255,255,255,.7)}
+.next-title{font-size:clamp(29px,7.4vw,58px);line-height:1.02;color:var(--azul);text-shadow:1px 1px 0 rgba(255,255,255,.7)}
 .next-lineup{font-size:23px;color:var(--ink-soft);margin-top:2px}
 .next-venue{font-family:var(--comic);font-size:17px;letter-spacing:1.4px;color:var(--azul-soft);margin-top:8px}
 .next-count{display:flex;align-items:flex-end;gap:14px}
@@ -303,7 +321,7 @@ html,body{overflow-x:hidden}
 .rank-aside-txt{flex:1;font-size:21px;color:var(--ink-faint);line-height:1.25;padding-top:10px}
 
 /* ---------- top shows (folha verde) ---------- */
-.top-title{font-family:var(--gotica);font-size:clamp(44px,6vw,70px);color:#26301f;line-height:1;
+.top-title{font-family:var(--gotica);font-size:clamp(31px,8vw,70px);color:#26301f;line-height:1;
   text-shadow:2px 2px 0 rgba(255,255,255,.5),5px 6px 0 rgba(40,52,36,.22)}
 .top-sub{font-size:22px;color:var(--ink-verde-soft);margin:2px 0 18px}
 .top-list{display:flex;flex-direction:column}
@@ -334,7 +352,7 @@ html,body{overflow-x:hidden}
 .cassete-label{font-family:var(--comic);font-size:11px;letter-spacing:1px;color:#2a2016;text-align:center;margin-top:5px}
 
 /* ---------- setlist completa ---------- */
-.arch-title{font-family:var(--gotica);font-size:clamp(48px,6.6vw,80px);color:var(--ink-2);line-height:1;
+.arch-title{font-family:var(--gotica);font-size:clamp(33px,8.6vw,80px);color:var(--ink-2);line-height:1;
   text-shadow:2px 2px 0 rgba(255,255,255,.55),5px 6px 0 rgba(64,42,20,.24)}
 .arch-sub{font-size:22px;color:var(--ink-faint);margin:2px 0 22px}
 .yearblock{margin-bottom:28px}
@@ -387,19 +405,103 @@ html,body{overflow-x:hidden}
 .hud-txt{font-family:var(--comic);font-size:17px;letter-spacing:1.4px;color:#17110b}
 
 @media(max-width:760px){
-  .page{padding:22px 14px 120px}
-  .tabs{margin-left:6px}
-  .tab{padding:10px 16px 14px}
-  .tab-label{font-size:24px}
-  .paper--next .paper-body,.paper--archive .paper-body{padding:44px 22px 36px 62px}
-  .paper--rank .paper-body{padding:40px 22px 34px 62px}
-  .paper--top .paper-body{padding:44px 22px 34px 34px}
+  .page{padding:18px 10px 86px}
+  .paper{margin-bottom:34px}
+
+  /* abas: cabem as três na largura do celular sem quebrar linha */
+  .tabs{margin:0 0 -14px 6px}
+  .tab{padding:8px 12px 12px;gap:6px}
+  .tab--b,.tab--c{margin-left:-6px}
+  .tab-label{font-size:17px;white-space:nowrap}
+  .tab .fret{width:15px;height:18px}
+
+  /* a régua vermelha sobe pra 40px, então o texto começa logo depois dela */
+  .paper--next .paper-body,.paper--archive .paper-body{padding:34px 16px 28px 52px}
+  .paper--rank .paper-body{padding:30px 16px 26px 52px}
+  .paper--top .paper-body{padding:34px 16px 26px 24px}
   .paper--next .paper-folds::before,.paper--rank .paper-folds::before,.paper--archive .paper-folds::before{left:40px}
+  .paper--next .paper-folds::after{display:none}
+  .paper--rule .paper-body{padding:20px 18px 22px}
+
+  /* tipografia: o que era tamanho fixo de desktop */
+  .brand-sub{font-size:17px}
+  .section-label,.year-label{font-size:21px}
+  .mini-label,.search-label,.treta-label,.rule-label{font-size:17px}
+  .next-title{line-height:1.08}
+  .next-lineup{font-size:17px}
+  .next-venue{font-size:14px}
+  .next{gap:14px}
+  .next-days{font-size:56px}
+  .next-unit{font-size:20px}
+  .next-dow{font-size:17px}
+  .next-date{font-size:13px}
+  .stats{gap:10px;grid-template-columns:1fr 1fr;margin-top:24px}
+  .stat{padding:9px 10px 8px}
+  .stat-n{font-size:30px}
+  .stat-n--sm{font-size:23px}
+  .stat-l{font-size:15px}
+  .search{margin-top:26px}
+  .search-box input,.search-cursor{font-size:23px}
+  .search-caret{height:25px}
+  .search-line{font-size:21px}
+  .search-count{font-size:26px}
+  .search-outras,.search-outra{font-size:17px}
+  .hit{font-size:15px;gap:7px}
+  .hit-place{font-size:16px}
+  .hit-date{font-size:15px;width:44px}
+  .hit-role{font-size:12px}
+  .rank-grid{gap:22px;margin-top:14px}
+  .rank-name{font-size:19px}
+  .rank-tally,.year-tally{font-size:18px;letter-spacing:2px}
+  .rank-n,.year-n,.rank-pos{font-size:15px}
+  .year-y{font-size:17px;width:44px}
+  .rank-aside-txt{font-size:16px}
+  .top-sub,.arch-sub{font-size:17px}
+  .top-row{gap:9px;padding:9px 0}
+  .top-pos{font-size:19px;width:24px}
+  .top-name{font-size:21px}
+  .top-meta{font-size:12px}
+  .top-avg{font-size:22px;width:32px}
+  .treta-mid{font-size:19px}
+  .treta-notas{font-size:15px}
+  .year-count{font-size:14px}
+  .show-title{font-size:21px}
+  .show-lineup{font-size:16px}
+  .show-place{font-size:12px}
+  .show-check{font-size:23px;width:19px}
+  .show-preco,.show-nums{font-size:17px}
+  .badge{font-size:11px}
+  .rule-text{font-size:18px}
+  .stars{font-size:16px;letter-spacing:1px}
+  .stars--bege{font-size:15px}
+
+  /* a linha do show empilha: título, depois desenho e notas */
+  .show{flex-wrap:wrap;gap:8px}
+  .show-slot{margin:6px 0 0 30px;width:96px}
+  .show-right{width:100%;text-align:left;padding-left:30px}
+
+  /* A borda rasgada continua vindo do clip-path; o filtro só acrescentava um
+     tremor nela. Num celular ele roda um feDisplacementMap sobre a folha
+     inteira — a da setlist passa de 5000px — e é o que sobrou de caro. */
+  .paper-torn,.tab-paper{filter:none}
+
   .cassete{display:none}
-  .next-days{font-size:74px}
-  .show{flex-wrap:wrap}
-  .show-slot{margin:8px 0 0 38px}
-  .show-right{width:100%;text-align:left;padding-left:38px}
   .scuff{display:none}
+  .hero-slot{flex:0 0 120px;margin-top:4px}
+  .hero-head{gap:14px}
+  .rank-slot{width:118px}
+  .top-slot{width:120px}
+
+  /* HUD: uma linha só, pra não comer a tela */
+  .hud{gap:5px;padding:8px 6px 9px}
+  .hud-btn{padding:5px 9px 4px;gap:5px;border-radius:14px}
+  .hud-btn .fret{width:12px;height:14px}
+  .hud-strum{width:17px;height:8px}
+  .hud-txt{font-size:12px;letter-spacing:.6px}
+}
+@media(max-width:380px){
+  .hud-txt{font-size:10.5px;letter-spacing:.3px}
+  .hud-btn{padding:5px 7px 4px}
+  .tab-label{font-size:15px}
 }
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}

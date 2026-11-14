@@ -34,8 +34,12 @@
 
 *{box-sizing:border-box}
 /* as folhas de trás e a borda rasgada sangram de propósito pra fora do container */
-html,body{margin:0;background:#1a0d06;color:var(--tinta);overflow-x:hidden}
-body{font-family:var(--f-mao)}
+/* overflow-x:hidden no html+body transformava o body numa 2ª área de rolagem
+   (overflow-y vira auto): no celular o dedo "prendia" nela antes de rolar a página.
+   clip corta sem criar área de rolagem; o hidden só no html é o fallback. */
+html,body{margin:0;background:#1a0d06;color:var(--tinta)}
+html{overflow-x:hidden}
+body{font-family:var(--f-mao);overflow-x:clip}
 a{color:var(--caneta);text-decoration:none}
 a:hover{color:var(--vermelho)}
 button{font:inherit;color:inherit}

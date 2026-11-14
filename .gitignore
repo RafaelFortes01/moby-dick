@@ -17,3 +17,6 @@ yarn-error.log*
 .agents/
 .claude/
 skills-lock.json
+
+# referencia de design (handoff do Claude Design)
+design_handoff_guitar_hero/
